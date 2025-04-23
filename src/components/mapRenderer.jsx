@@ -3,22 +3,21 @@ import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simp
 import { geoRobinson } from "d3-geo-projection";
 import { geoCentroid } from "d3-geo";
 
-// Dimensions
-const width = 800;
-const height = 600;
-
-// Robinson projection centered in the viewport
-const projection = geoRobinson()
-  .translate([width / 2, height / 2])
-  .scale(150);
+const ViewBox_Width = 2000;
+const ViewBox_Height = 1000;
 
 export default function MapChart() {
+
+  const projection = geoRobinson()
+    .translate([ViewBox_Width / 2, ViewBox_Height / 2])
+    .scale(300)
+
   // State for controlled center and zoom
   const [position, setPosition] = useState({
     coordinates: [0, 0],
     zoom: 1
   });
-
+  
   // Compute centroid on click and zoom in
   const handleContinentClick = useCallback((geo) => {
     const [lon, lat] = geoCentroid(geo);
@@ -31,16 +30,12 @@ export default function MapChart() {
   };
 
   return (
-    <div style={{ maxWidth: width, margin: "0 auto" }}>
-      <button onClick={handleReset} style={{ marginBottom: 10 }}>
+    <div style={{ Width: "100%", margin: "0 auto" }}>
+      <button onClick={handleReset}>
         Reset View
       </button>
 
-      <ComposableMap
-        projection={projection}
-        width={width}
-        height={height}
-      >
+      <ComposableMap projection={projection} viewBox="0 0 2000 1000" preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto" }}>
         <ZoomableGroup
           center={position.coordinates}
           zoom={position.zoom}
