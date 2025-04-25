@@ -2,12 +2,17 @@ import React, { useState, useCallback } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { geoRobinson } from "d3-geo-projection";
 import { geoCentroid } from "d3-geo";
+import topojson from 'topojson-client' // topojson -> geojson for easier coordinate use
+
+// to do: implement the topojson-client into the website and use the coordinates instead of viewbox to zoom into the countries 
 
 const ViewBox_Width = 2000;
 const ViewBox_Height = 1000;
+const defaultViewBox = "0 0 2000 1000 "
 
 export default function MapChart() {
 
+  // Projection of the map
   const projection = geoRobinson()
     .translate([ViewBox_Width / 2, ViewBox_Height / 2])
     .scale(300)
@@ -15,7 +20,8 @@ export default function MapChart() {
   // State for controlled center and zoom
   const [position, setPosition] = useState({
     coordinates: [0, 0],
-    zoom: 1
+    zoom: 1,
+    viewBox: defaultViewBox
   });
   
   // Compute centroid on click and zoom in
@@ -26,7 +32,7 @@ export default function MapChart() {
 
   // Reset to full-world view
   const handleReset = () => {
-    setPosition({ coordinates: [0, 0], zoom: 1 });
+    setPosition({ viewBox: defaultViewBox });
   };
 
   return (
@@ -35,7 +41,7 @@ export default function MapChart() {
         Reset View
       </button>
 
-      <ComposableMap projection={projection} viewBox="0 0 2000 1000" preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto" }}>
+      <ComposableMap projection={projection} viewBox={defaultViewBox} preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto" }}>
         <ZoomableGroup
           center={position.coordinates}
           zoom={position.zoom}
