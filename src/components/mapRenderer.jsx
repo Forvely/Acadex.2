@@ -1,24 +1,28 @@
 import React, { useState, useCallback } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  ZoomableGroup,
+  Marker,
+} from "react-simple-maps";
 import { geoRobinson } from "d3-geo-projection";
 import { geoCentroid } from "d3-geo";
 import * as topojson from "topojson-client"; // topojson -> geojson for easier coordinate use
 
-// to do: implement the topojson-client into the website and use the coordinates instead of viewbox to zoom into the countries 
+// to do: implement the topojson-client into the website and use the coordinates instead of viewbox to zoom into the countries
 
-const ViewBox_Width = 2000;
-const ViewBox_Height = 1000;
-const defaultViewBox = "0 0 2000 1000 "
+const ViewBox_Width = 800;
+const ViewBox_Height = 400;
+// const defaultViewBox = "0 0 2000 1000 ";
 
-const topoMap = "/countries-topojson.json"
-
+const topoMap = "/countries-topojson.json";
 
 export default function MapChart() {
-
   // Projection of the map
   const projection = geoRobinson()
     .translate([ViewBox_Width / 2, ViewBox_Height / 2])
-    .scale(300)
+    .scale(125);
 
   // State for controlled center and zoom
   const [position, setPosition] = useState({
@@ -26,29 +30,33 @@ export default function MapChart() {
     zoom: 1,
   });
 
-  const [markerCoords, setMarkerCoords] = useState(null);
-  
+  const [markerCoords, setMarkerCoords] = useState([0, 0]);
+
   // Compute centroid on click and zoom in
   const handleContinentClick = useCallback((geo) => {
     const [lon, lat] = geoCentroid(geo);
     setPosition({ coordinates: [lon, lat], zoom: 4 });
     setMarkerCoords([lon, lat]);
-    console.log([lon, lat])
+    console.log([lon, lat]);
   }, []);
 
   // Reset to full-world view
   const handleReset = () => {
-    setPosition({ zoom: 1, coordinates: [0,0] });
+    setPosition({ zoom: 1, coordinates: [0, 0] });
     setMarkerCoords([0, 0]);
   };
 
   return (
-    <div style={{ Width: "100%", margin: "0 auto" }}>
-      <button onClick={handleReset}>
-        Reset View
-      </button>
+    <div style={{ width: "100%", margin: "0 auto" }}>
+      <button onClick={handleReset}>Reset View</button>
 
-      <ComposableMap projection={projection}  preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto" }}>
+      <ComposableMap
+        projection={projection}
+        preserveAspectRatio="xMinYMin meet"
+        width={ViewBox_Width}
+        height={ViewBox_Height}
+        style={{ width: "100%", height: "auto" }}
+      >
         <ZoomableGroup
           center={position.coordinates}
           zoom={position.zoom}
@@ -63,9 +71,21 @@ export default function MapChart() {
                   geography={geo}
                   onClick={() => handleContinentClick(geo)}
                   style={{
-                    default: { outline: "none", fill: "#ECEFF1", stroke: "#607D8B" },
-                    hover:   { outline: "none", fill: "#CFD8DC", cursor: "pointer" },
-                    pressed: { outline: "none", fill: "#FF5722", cursor: "pointer" }
+                    default: {
+                      outline: "none",
+                      fill: "#ECEFF1",
+                      stroke: "#607D8B",
+                    },
+                    hover: {
+                      outline: "none",
+                      fill: "#CFD8DC",
+                      cursor: "pointer",
+                    },
+                    pressed: {
+                      outline: "none",
+                      fill: "#FF5722",
+                      cursor: "pointer",
+                    },
                   }}
                 />
               ))
